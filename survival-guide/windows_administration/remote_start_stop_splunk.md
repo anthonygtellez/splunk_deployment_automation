@@ -1,8 +1,8 @@
 # Create an array from your server list to iterate over in powershell:
 $hosts=Get-Content .\servlist.txt
 
-#START SERVICE:
+# START SERVICE:
 $hosts | %{Get-Service -name SplunkForwarder -ComputerName $_} | Set-Service -verbose  -status running
 
-STOP SERVICE:
+# STOP SERVICE:
 $hosts | %{Get-Service -name SplunkForwarder -ComputerName $_} | Set-Service -verbose  -status stopped

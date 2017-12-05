@@ -1,0 +1,3 @@
+# Run the following command from powershell to create a server list
+
+(Get-QADComputer -OSName *server*).name  > servlist.txt
