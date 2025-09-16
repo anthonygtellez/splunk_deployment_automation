@@ -1,82 +1,114 @@
 # Splunk Deployment & Automation
-Deployment scripts, playbooks and examples for for configuring Splunk securely.
+Deployment scripts, playbooks and examples for configuring Splunk securely.
 
-### Any content which ends in .sh is an executable script, read the comments on what it does if you can't tell by the name. Anything that ends in .txt or .md are examples of how to perform various tasks in Linux or windows. They are listed here as commands you might need to do during migration or when you are attempting to automate something you don't want to do manually hundreds of times. These have been mostly been tested on RHEL7 and Ubuntu 16.04 over the last 2 years.
+## Repository Structure
 
+This repository has been organized into two main sections:
 
-### Splunk Core-UF
-These script are used to install or upgrade splunk for linux. Local scripts should be used on the host you are trying to install on, remote scripts expect a list of ips or resolvable hostnames or dns names.
+### `splunk/` - Splunk-Specific Scripts
+Splunk installation, upgrade, and configuration scripts.
+
+### `survival-guide/` - General System Administration
+General Linux, SSL, SSH, and AWS administration scripts and documentation.
+
+## Splunk Scripts
+
+### Installation Scripts
+These scripts are used to install Splunk Enterprise and Universal Forwarder on Linux systems.
+
+**Splunk Enterprise:**
 ```
-splunk_automation/install/splunk-core/local.sh
-splunk_automation/install/splunk-core/remote.sh
-splunk_automation/install/splunk-uf/local.sh
-splunk_automation/install/splunk-uf/remote.sh
-splunk_automation/upgrade/splunk-core/local.sh
-splunk_automation/upgrade/splunk-core/remote.sh
-splunk_automation/upgrade/splunk-uf/local.sh
-splunk_automation/upgrade/splunk-uf/remote.sh
-```
-
-### OS Firewall Tuning
-These scripts are for rhel 7. They open the correct ports needed for splunk core, uba & syslog-ng. The firewalld services are XML based, so you can tweak the scripts as needed.
-```
-splunk_automation/rhlinux/firewalld/splunk-core-service.sh
-splunk_automation/rhlinux/firewalld/syslog-ng-service.sh
-splunk_automation/rhlinux/firewalld/uba-service.sh
+splunk/install/splunk-core/local.sh          # Local installation
+splunk/install/splunk-core/remote.sh         # Remote installation
+splunk/install/splunk-core/boot_start-fix.sh # Boot configuration
 ```
 
-### OS Kernel Tuning
-These scripts are used to disable-thp on linux and reconfigure the ulimits. Validate ulimits checks what ulimits the splunkd pid currently has. You may need to restart splunkd for these settings to take effect.
+**Universal Forwarder:**
 ```
-splunk_automation/linux/kernel/disable-thp.sh
-splunk_automation/linux/kernel/increase-ulimit.sh
-splunk_automation/linux/kernel/validate-ulimit.sh
-```
-
-## install_syslog-ng
-Test scripts for installing syslog-ng on RHEL. The yum install works only if the EPEL is configured upstream.
-```
-./install_syslog-ng/rhel_local_install_syslog-ng.sh
-./install_syslog-ng/rhel_yum_install_syslog-ng.sh
+splunk/install/splunk-uf/local.sh            # Local installation
+splunk/install/splunk-uf/remote.sh           # Remote installation
+splunk/install/splunk-uf/dep-client-local.sh # With deployment client config
 ```
 
-
-## misc_tasks
+**Syslog-ng:**
 ```
-./misc_tasks/loop_through_list_and_cmd.txt
-./misc_tasks/misc_tasks.txt
-./misc_tasks/progress_bar.txt
+splunk/install/syslog-ng/rhel_local_install_syslog-ng.sh  # Local RPM install
+splunk/install/syslog-ng/rhel_yum_install_syslog-ng.sh    # YUM install
 ```
 
-## splunk_configuration
+### Upgrade Scripts
+These scripts are used to upgrade existing Splunk installations.
+
 ```
-./splunk_configuration/create_archive_paths.txt
-./splunk_configuration/edit_multiple_files_in_local.txt
-./splunk_configuration/install_db_connect.sh
-./splunk_configuration/itsi_installer.sh
-./splunk_configuration/multitenant_appbuilder.sh
-./splunk_configuration/multitenant_tabuilder.sh
+splunk/upgrade/splunk-core/local.sh   # Upgrade Splunk Enterprise locally
+splunk/upgrade/splunk-core/remote.sh  # Upgrade Splunk Enterprise remotely
+splunk/upgrade/splunk-uf/local.sh     # Upgrade Universal Forwarder locally
+splunk/upgrade/splunk-uf/remote.sh    # Upgrade Universal Forwarder remotely
 ```
 
-## ssh_config
+## Survival Guide
+
+### Linux System Administration
+**Firewall Configuration:**
 ```
-./ssh_config/create_authorized_keys.sh
+survival-guide/linux/firewalld/splunk-core-service.sh  # Splunk Core ports
+survival-guide/linux/firewalld/syslog-ng-service.sh    # Syslog-ng ports
+survival-guide/linux/firewalld/uba-service.sh          # UBA ports
 ```
 
-## stream_config
+**Kernel Optimization:**
 ```
-./stream_config/load_pcaps_from_list.txt
-./stream_config/stream_update.py
-```
-
-## syslog_ng_configs
-```
-./syslog_ng_configs/syslog-ng_ip.conf
-./syslog_ng_configs/syslog-ng_port.conf
+survival-guide/linux/kernel/disable-thp.sh      # Disable Transparent Huge Pages
+survival-guide/linux/kernel/increase-ulimit.sh  # Increase system limits
+survival-guide/linux/kernel/optimize_linux.sh   # Comprehensive optimization
+survival-guide/linux/kernel/validate-ulimit.sh  # Check current limits
 ```
 
-## windows_administration
+**TCP Stack Tuning:**
 ```
-./windows_administration/create_server_list.txt
-./windows_administration/remote_start_stop_splunk.txt
+survival-guide/linux/tcp-stack/optimal-teardown.sh  # Optimize TCP connections
 ```
+
+### SSL/TLS Certificate Management
+```
+survival-guide/ssl/create-serverpem.sh              # Create server.pem
+survival-guide/ssl/dod-signed-cert-stripper.sh      # Extract DOD certificates
+survival-guide/ssl/letsencrypt.sh                   # Let's Encrypt integration
+survival-guide/ssl/replace-splunk-certs.sh          # Replace certificates
+survival-guide/ssl/ssl_troubleshooting.md           # SSL troubleshooting guide
+survival-guide/ssl/open-ssl_cheat_sheet.md          # OpenSSL command reference
+```
+
+### SSH Configuration
+```
+survival-guide/ssh/create_authorized_keys.sh  # SSH key management
+```
+
+### AWS Integration
+```
+survival-guide/aws/test_uploads3.sh  # S3 connectivity testing
+```
+
+### Additional Resources
+```
+survival-guide/firewalking_port_testing/     # Network testing with NetCat
+survival-guide/hacking_tools/                # Splunk administrative tools
+survival-guide/misc_tasks/                   # General Linux commands
+survival-guide/splunk_configuration/         # Splunk configuration examples
+survival-guide/sql_queries-dbx/              # Database query examples
+survival-guide/stream_config/                # Stream processing examples
+survival-guide/windows_administration/       # Windows PowerShell examples
+```
+
+## Usage Notes
+
+- All `.sh` files are executable scripts with detailed comments
+- All `.md` files contain documentation and examples
+- Scripts have been tested on RHEL7 and Ubuntu 16.04+
+- Read script headers for specific usage instructions
+- Some scripts require root privileges
+- Remote scripts expect hostname/IP lists as input
+
+## Documentation
+
+See `SCRIPT_DOCUMENTATION.md` for comprehensive documentation of all scripts, including parameters, usage examples, and known issues.
